@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>जलवायु परिवर्तन की घड़ी (इको-सिम)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* बुनियादी लेआउट और थीम */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", "Nirmala UI", "Noto Sans Devanagari", sans-serif;
+            background: radial-gradient(circle at top, #062d4f 0%, #021019 45%, #02070c 100%);
+            color: #ecf0f1;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 24px 12px;
+        }
+
+        .sim-container {
+            width: 100%;
+            max-width: 1100px;
+            background: linear-gradient(145deg, #041a24 0%, #031720 35%, #03281f 100%);
+            border-radius: 14px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+            padding: 20px 22px 24px;
+            border: 1px solid rgba(46, 204, 113, 0.18);
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            padding-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            letter-spacing: 0.03em;
+            color: #e9faf5;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: rgba(236, 240, 241, 0.75);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 850px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* मेट्रिक बॉक्स और कंट्रोल्स */
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .metric-card {
+            background: radial-gradient(circle at top left, rgba(46, 204, 113, 0.12), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(52, 152, 219, 0.16), transparent 55%);
+            border-radius: 12px;
+            padding: 14px 14px 12px;
+            border: 1px solid rgba(52, 152, 219, 0.24);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .metric-title {
+            font-size: 0.95rem;
+            color: rgba(236, 240, 241, 0.9);
+        }
+
+        .metric-sub {
+            font-size: 0.76rem;
+            color: rgba(236, 240, 241, 0.6);
+        }
+
+        .metric-main {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-top: 4px;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 2.3rem;
+            font-weight: 600;
+            color: #2ecc71;
+            text-shadow: 0 0 16px rgba(46, 204, 113, 0.4);
+        }
+
+        .metric-unit {
+            font-size: 0.95rem;
+            color: rgba(236, 240, 241, 0.8);
+        }
+
+        .metric-trend {
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        .campaign-status {
+            font-size: 0.8rem;
+            margin-top: 6px;
+            padding: 3px 7px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            background: rgba(39, 174, 96, 0.13);
+            border: 1px solid rgba(39, 174, 96, 0.45);
+            color: #aefacb;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #27ae60;
+            box-shadow: 0 0 6px rgba(39, 174, 96, 0.9);
+        }
+
+        .status-inactive {
+            background: rgba(127, 140, 141, 0.13);
+            border-color: rgba(127, 140, 141, 0.5);
+            color: #ecf0f1;
+        }
+
+        .status-inactive .status-dot {
+            background: #7f8c8d;
+            box-shadow: none;
+        }
+
+        .controls-card {
+            background: rgba(3, 22, 31, 0.9);
+            border-radius: 12px;
+            padding: 11px 14px 10px;
+            border: 1px solid rgba(236, 240, 241, 0.08);
+        }
+
+        .controls-title {
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: rgba(236, 240, 241, 0.9);
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.18s ease, transform 0.12s ease,
+                        box-shadow 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+        }
+
+        button:active {
+            transform: translateY(1px) scale(0.99);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: #0b1810;
+            box-shadow: 0 0 18px rgba(39, 174, 96, 0.65);
+            border: 1px solid rgba(39, 174, 96, 0.8);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2ecc71, #2ecc71);
+            box-shadow: 0 0 22px rgba(39, 174, 96, 0.9);
+        }
+
+        .btn-primary:disabled {
+            cursor: default;
+            opacity: 0.65;
+            box-shadow: none;
+        }
+
+        .btn-ghost {
+            background: rgba(3, 33, 45, 0.9);
+            color: rgba(236, 240, 241, 0.9);
+            border: 1px solid rgba(236, 240, 241, 0.26);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(20, 61, 80, 0.96);
+            border-color: rgba(236, 240, 241, 0.6);
+            box-shadow: 0 0 14px rgba(52, 152, 219, 0.45);
+        }
+
+        .explain-card {
+            background: rgba(3, 20, 32, 0.95);
+            border-radius: 12px;
+            padding: 10px 12px 10px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: rgba(236, 240, 241, 0.82);
+        }
+
+        .explain-card strong {
+            color: #2ecc71;
+        }
+
+        .explain-list {
+            margin-top: 6px;
+            padding-left: 14px;
+        }
+
+        .explain-list li {
+            margin-bottom: 2px;
+        }
+
+        /* ग्राफ़ पैनल */
+
+        .chart-card {
+            background: radial-gradient(circle at top, rgba(52, 152, 219, 0.18), transparent 55%),
+                        radial-gradient(circle at bottom, rgba(46, 204, 113, 0.16), transparent 55%),
+                        #011017;
+            border-radius: 12px;
+            padding: 10px 10px 12px;
+            border: 1px solid rgba(52, 152, 219, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+            padding: 0 4px;
+        }
+
+        .chart-title {
+            font-size: 0.95rem;
+            color: rgba(236, 240, 241, 0.94);
+        }
+
+        .chart-sub {
+            font-size: 0.78rem;
+            color: rgba(236, 240, 241, 0.65);
+        }
+
+        .legend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: rgba(236, 240, 241, 0.78);
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+
+        .legend-color {
+            width: 26px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.7);
+        }
+
+        .chart-wrapper {
+            margin-top: 4px;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            background: transparent;
+        }
+
+        footer {
+            margin-top: 10px;
+            font-size: 0.78rem;
+            color: rgba(236, 240, 241, 0.65);
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-note {
+            max-width: 70%;
+        }
+
+        @media (max-width: 650px) {
+            header h1 {
+                font-size: 1.3rem;
+            }
+            .metric-value {
+                font-size: 2.0rem;
+            }
+            .footer-note {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="sim-container">
+    <header>
+        <h1>जलवायु परिवर्तन की घड़ी (इको‑सिमुलेटर)</h1>
+        <p>
+            यह सिमुलेशन एक काल्पनिक वायुमंडलीय सूचक
+            <strong>“सांद्रता स्तर (पीपीएम)”</strong> को समय के साथ दिखाता है।
+            आप <strong>वनारोपण अभियान</strong> शुरू कर के देख सकते हैं कि प्रवृत्ति कैसे बदलती है।
+        </p>
+    </header>
+
+    <div class="layout">
+        <!-- बाएँ पैनल: मेट्रिक + कंट्रोल्स + व्याख्या -->
+        <div class="left-panel">
+            <!-- मुख्य मेट्रिक कार्ड -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-title">वर्तमान स्तर</div>
+                        <div class="metric-sub">तात्कालिक सांद्रता — सिम्युलेटेड मान</div>
+                    </div>
+                </div>
+
+                <div class="metric-main">
+                    <span id="currentLevel" class="metric-value">0.0</span>
+                    <span class="metric-unit">पीपीएम</span>
+                </div>
+
+                <div id="trendLabel" class="metric-trend">रुझान: —</div>
+
+                <div id="campaignStatus" class="campaign-status status-inactive">
+                    <span class="status-dot"></span>
+                    <span>अभियान निष्क्रिय</span>
+                </div>
+            </div>
+
+            <!-- कंट्रोल्स कार्ड -->
+            <div class="controls-card">
+                <div class="controls-title">हस्तक्षेप नियंत्रण</div>
+                <div class="button-row">
+                    <button id="startAfforestation" class="btn-primary">
+                        वनारोपण अभियान शुरू करें
+                    </button>
+                    <button id="resetSim" class="btn-ghost">
+                        सिमुलेशन पुनः प्रारंभ करें
+                    </button>
+                </div>
+            </div>
+
+            <!-- संक्षिप्त व्याख्या -->
+            <div class="explain-card">
+                <strong>कैसे समझें:</strong>
+                <ul class="explain-list">
+                    <li>ऊपर की <strong>संख्या</strong> वर्तमान सांद्रता (पीपीएम) दिखाती है।</li>
+                    <li>हरा ग्राफ़ समय के साथ इस स्तर की <strong>यात्रा</strong> दिखाता है।</li>
+                    <li>शुरुआत में रुझान <strong>तेज़ वृद्धि</strong> की ओर है (नकारात्मक परिदृश्य)।</li>
+                    <li>जब आप <strong>वनारोपण अभियान</strong> शुरू करते हैं, तो वृद्धि दर धीरे‑धीरे
+                        घटती है और उपयुक्त अवस्था में स्तर कम भी हो सकता है।</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- दायाँ पैनल: ग्राफ़ -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">सांद्रता स्तर – पीपीएम (समय के साथ)</div>
+                    <div class="chart-sub">ऊर्ध्वाधर धुरी: सांद्रता | क्षैतिज धुरी: सिम्युलेटेड वर्ष</div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <span class="legend-color"></span>
+                <span>वायुमंडलीय सांद्रता का अनुमानित मार्ग</span>
+            </div>
+
+            <div class="chart-wrapper">
+                <!-- कैनवास: लाइन ग्राफ़ -->
+                <canvas id="ppmCanvas" width="900" height="360"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-note">
+            यह मॉडल शिक्षण हेतु सरल किया गया है; वास्तविक जलवायु‑प्रणाली कहीं अधिक जटिल होती है,
+            जिसमें अनेक गैसें, फीडबैक और समय‑मापनी शामिल हैं।
+        </div>
+        <div>
+            मोड: <strong>शुद्ध HTML + CSS + JavaScript (ऑफ़लाइन)</strong>
+        </div>
+    </footer>
+</div>
+
+<script>
+(function () {
+    // DOM एलिमेंट्स
+    var canvas = document.getElementById('ppmCanvas');
+    var ctx = canvas.getContext('2d');
+
+    var currentLevelSpan = document.getElementById('currentLevel');
+    var trendLabel = document.getElementById('trendLabel');
+    var campaignStatus = document.getElementById('campaignStatus');
+    var startButton = document.getElementById('startAfforestation');
+    var resetButton = document.getElementById('resetSim');
+
+    // ग्राफ़ मार्जिन और डेटा
+    var padding = { left: 60, right: 18, top: 22, bottom: 42 };
+    var data = [];
+    var times = [];
+    var maxPoints = 320; // लाइन के अधिकतम बिंदु (स्लाइडिंग विंडो)
+
+    // PPM स्केल (स्थिर)
+    var minPPM = 360;
+    var maxPPM = 520;
+
+    // सिमुलेशन पैरामीटर (वर्ष आधारित)
+    var currentLevel = 415.0;        // शुरुआती सांद्रता (पीपीएम)
+    var simTime = 0.0;               // सिम्युलेटेड वर्ष
+    var sampleInterval = 0.14;       // हर कितने वर्ष पर नया डेटा बिंदु
+    var simSpeed = 3.0;              // वास्तविक 1 सेकंड = इतने सिम्युलेटेड वर्ष
+    var sampleAccumulator = 0.0;
+    var lastRealTime = null;
+
+    // उत्सर्जन और अवशोषण के सरलीकृत पैरामीटर (पीपीएम/वर्ष)
+    var baseEmissionRate = 3.0;      // मानो मानवजनित उत्सर्जन के कारण
+    var baseSinkRate = -1.0;         // प्राकृतिक अवशोषण (समुद्र, वन आदि)
+    var currentEmissionRate = baseEmissionRate;
+    var currentSinkRate = baseSinkRate;
+
+    // अभियान के बाद लक्षित अवशोषण और उत्सर्जन
+    var targetSinkRate = -4.0;       // वनारोपण के बाद अधिक अवशोषण
+    var targetEmissionRate = 1.0;    // नीतिगत परिवर्तन से उत्सर्जन में कमी
+    var campaignActive = false;
+    var campaignProgress = 0.0;      // 0 से 1 के बीच
+    var campaignDurationYears = 10.0; // इतने सिम्युलेटेड वर्षों में प्रभाव पूर्ण विकसित
+
+    // ====== उपयोगी फ़ंक्शन ======
+
+    function easeOutCubic(t) {
+        // स्मूथ परिवर्तन वक्र
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    function resetSimulation() {
+        data = [];
+        times = [];
+
+        currentLevel = 415.0;
+        simTime = 0.0;
+        sampleAccumulator = 0.0;
+        lastRealTime = null;
+
+        campaignActive = false;
+        campaignProgress = 0.0;
+        currentEmissionRate = baseEmissionRate;
+        currentSinkRate = baseSinkRate;
+
+        data.push(currentLevel);
+        times.push(simTime);
+
+        // UI अपडेट
+        currentLevelSpan.textContent = currentLevel.toFixed(1);
+        trendLabel.textContent = 'रुझान: तेज़ वृद्धि';
+        trendLabel.style.color = '#e74c3c';
+
+        campaignStatus.classList.add('status-inactive');
+        campaignStatus.innerHTML = '<span class="status-dot"></span><span>अभियान निष्क्रिय</span>';
+
+        startButton.disabled = false;
+    }
+
+    // सिमुलेशन अपडेट
+    function updateSimulation(deltaSimYears) {
+        // यदि अभियान सक्रिय है तो धीरे‑धीरे पैरामीटर बदलें
+        if (campaignActive && campaignProgress < 1) {
+            campaignProgress += deltaSimYears / campaignDurationYears;
+            if (campaignProgress > 1) campaignProgress = 1;
+
+            var t = easeOutCubic(campaignProgress);
+
+            // अवशोषण और उत्सर्जन दोनों पर प्रभाव
+            currentSinkRate = baseSinkRate + (targetSinkRate - baseSinkRate) * t;
+            currentEmissionRate = baseEmissionRate +
+                                  (targetEmissionRate - baseEmissionRate) * t;
+        }
+
+        sampleAccumulator += deltaSimYears;
+
+        // तय समयांतराल पर नया डेटा बिंदु
+        while (sampleAccumulator >= sampleInterval) {
+            sampleAccumulator -= sampleInterval;
+
+            var netRate = currentEmissionRate + currentSinkRate; // पीपीएम/वर्ष
+            currentLevel += netRate * sampleInterval;
+            simTime += sampleInterval;
+
+            // यथार्थवादी सीमा (सिर्फ़ विज़ुअल के लिए)
+            if (currentLevel < 340) currentLevel = 340;
+            if (currentLevel > 580) currentLevel = 580;
+
+            data.push(currentLevel);
+            times.push(simTime);
+
+            if (data.length > maxPoints) {
+                data.shift();
+                times.shift();
+            }
+        }
+
+        // UI में वर्तमान स्तर और रुझान
+        currentLevelSpan.textContent = currentLevel.toFixed(1);
+
+        var instantNetRate = currentEmissionRate + currentSinkRate;
+        if (instantNetRate > 1.6) {
+            trendLabel.textContent = 'रुझान: तेज़ वृद्धि';
+            trendLabel.style.color = '#e74c3c';
+        } else if (instantNetRate > 0.3) {
+            trendLabel.textContent = 'रुझान: धीमी वृद्धि';
+            trendLabel.style.color = '#f1c40f';
+        } else if (instantNetRate > -0.05) {
+            trendLabel.textContent = 'रुझान: लगभग स्थिर';
+            trendLabel.style.color = '#ffffff';
+        } else {
+            trendLabel.textContent = 'रुझान: कमी';
+            trendLabel.style.color = '#2ecc71';
+        }
+    }
+
+    // लाइन ग्राफ़ ड्रॉ
+    function drawGraph() {
+        var w = canvas.width;
+        var h = canvas.height;
+        var plotW = w - padding.left - padding.right;
+        var plotH = h - padding.top - padding.bottom;
+
+        // बैकग्राउंड
+        var bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+        bgGrad.addColorStop(0, '#021824');
+        bgGrad.addColorStop(0.5, '#041b22');
+        bgGrad.addColorStop(1, '#031b16');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // हल्के ग्लो
+        ctx.save();
+        var glowGrad = ctx.createRadialGradient(
+            w * 0.2, h * 0.2, 10,
+            w * 0.2, h * 0.2, w * 0.7
+        );
+        glowGrad.addColorStop(0, 'rgba(46, 204, 113, 0.26)');
+        glowGrad.addColorStop(1, 'rgba(46, 204, 113, 0.0)');
+        ctx.fillStyle = glowGrad;
+        ctx.fillRect(0, 0, w, h);
+        ctx.restore();
+
+        ctx.font = '11px sans-serif';
+
+        // क्षैतिज ग्रिड (PPM)
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        var tickStep = 20; // 360, 380, ..., 520
+        for (var v = minPPM; v <= maxPPM; v += tickStep) {
+            var ratioY = (v - minPPM) / (maxPPM - minPPM);
+            var y = padding.top + (1 - ratioY) * plotH;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(w - padding.right, y);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(236, 240, 241, 0.75)';
+            ctx.fillText(v.toFixed(0), padding.left - 6, y);
+        }
+
+        // ऊर्ध्वाधर ग्रिड (समय)
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        var xTicks = 6;
+        var totalTimeSpan = times.length > 1 ? (times[times.length - 1] - times[0]) : 0;
+
+        for (var i = 0; i <= xTicks; i++) {
+            var x = padding.left + (plotW / xTicks) * i;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.beginPath();
+            ctx.moveTo(x, padding.top);
+            ctx.lineTo(x, h - padding.bottom);
+            ctx.stroke();
+
+            if (totalTimeSpan > 0) {
+                var tYear = times[0] + totalTimeSpan * (i / xTicks);
+                ctx.fillStyle = 'rgba(236, 240, 241, 0.75)';
+                ctx.fillText(tYear.toFixed(1), x, h - padding.bottom + 6);
+            }
+        }
+
+        // अक्ष रेखाएँ
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, padding.top);
+        ctx.lineTo(padding.left, h - padding.bottom);
+        ctx.lineTo(w - padding.right, h - padding.bottom);
+        ctx.stroke();
+
+        // अक्ष लेबल (देवनागरी)
+        ctx.save();
+        ctx.fillStyle = 'rgba(236, 240, 241, 0.92)';
+        ctx.font = '12px sans-serif';
+
+        // Y अक्ष लेबल
+        ctx.translate(16, h / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('सांद्रता (पीपीएम)', 0, 0);
+        ctx.restore();
+
+        // X अक्ष लेबल
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = 'rgba(236, 240, 241, 0.92)';
+        ctx.fillText('समय (वर्ष - सिमुलेशन)', padding.left + plotW / 2, h - 4);
+
+        // शीर्षक (कैनवास के अंदर, हल्का)
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.font = '13px sans-serif';
+        ctx.fillStyle = 'rgba(236, 240, 241, 0.9)';
+        ctx.fillText('सांद्रता मार्ग', padding.left, padding.top - 16);
+
+        // डेटा लाइन
+        if (data.length > 1) {
+            ctx.beginPath();
+            for (var j = 0; j < data.length; j++) {
+                var ratio = (data[j] - minPPM) / (maxPPM - minPPM);
+                var yVal = padding.top + (1 - ratio) * plotH;
+                var xVal = padding.left + (plotW * j / (data.length - 1));
+
+                if (j === 0) ctx.moveTo(xVal, yVal);
+                else ctx.lineTo(xVal, yVal);
+            }
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 2;
+            ctx.shadowColor = 'rgba(46, 204, 113, 0.7)';
+            ctx.shadowBlur = 8;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // अंतिम बिंदु पर हाइलाइट
+            var lastIndex = data.length - 1;
+            var lastRatio = (data[lastIndex] - minPPM) / (maxPPM - minPPM);
+            var lastY = padding.top + (1 - lastRatio) * plotH;
+            var lastX = padding.left + (plotW * lastIndex / (data.length - 1));
+
+            ctx.fillStyle = '#eafdf6';
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(46, 204, 113, 0.45)';
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 9, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+
+    // एनीमेशन लूप
+    function animate(timestamp) {
+        if (lastRealTime === null) {
+            lastRealTime = timestamp;
+        }
+
+        var deltaRealSec = (timestamp - lastRealTime) / 1000;
+        if (deltaRealSec < 0) deltaRealSec = 0;
+        if (deltaRealSec > 0.2) deltaRealSec = 0.2; // बहुत बड़े जंप से बचने के लिए
+
+        lastRealTime = timestamp;
+
+        var deltaSimYears = deltaRealSec * simSpeed;
+        updateSimulation(deltaSimYears);
+        drawGraph();
+
+        window.requestAnimationFrame(animate);
+    }
+
+    // बटन इवेंट्स
+    startButton.addEventListener('click', function () {
+        if (!campaignActive) {
+            campaignActive = true;
+            campaignProgress = 0.0;
+
+            campaignStatus.classList.remove('status-inactive');
+            campaignStatus.innerHTML = '<span class="status-dot"></span><span>अभियान सक्रिय</span>';
+
+            startButton.disabled = true;
+        }
+    });
+
+    resetButton.addEventListener('click', function () {
+        resetSimulation();
+    });
+
+    // प्रारंभिक सेटअप और एनीमेशन स्टार्ट
+    resetSimulation();
+    window.requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
